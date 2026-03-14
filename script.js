@@ -2,6 +2,12 @@ const createElements=(arr)=>{
    const grpElements=arr.map(el => `<span class="btn">${el}</span>`)
    return(grpElements.join(" "))
 }
+function pronounceWord(word) {
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-EN"; // English
+  window.speechSynthesis.speak(utterance);
+}
+// pronounceWord()
 
 const manageSpinner=(status)=>{
     if(status==true){
@@ -72,7 +78,7 @@ const displayWord=(words)=>{
             <p class="font-bangla font-semibold text-3xl">"${word.meaning ? word.meaning:"words not found"} / ${word.pronunciation?word.pronunciation:"words not found"}"</p>
          <div class="flex justify-between items-center">
             <button onclick="loadModal(${word.id})" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF50]"><i class="fa-solid fa-circle-info"></i></button>
-            <button class="btn bg-[#1A91FF10] hover:bg-[#1A91FF50]"><i class="fa-solid fa-volume-high"></i></button>
+            <button onclick="pronounceWord('${word.word}')" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF50]"><i class="fa-solid fa-volume-high"></i></button>
         </div>
         </div>
         `
@@ -136,4 +142,25 @@ const displayLesson=(lessons)=>{
         
     
 }
+
+
 loadLessons();
+
+document.getElementById('btn-search').addEventListener('click',()=>{
+    removeBtn()
+    const inputSearch=document.getElementById("input")
+    const output=inputSearch.value.trim().toLowerCase() //user ja type korbe oita pabo and xtra space trim kore bad dibo
+
+    fetch("https://openapi.programming-hero.com/api/words/all")
+    .then(res=>res.json())
+    .then(json => {
+    console.log(json)
+    const displaySearch=(json.data)
+    const filterWords=displaySearch.filter((word)=>word.word.toLowerCase().includes(output)) //search input a ja likhbo oita jodi word object er word propertyr sathe mile jay taile and oita lowercase hoite hobe then oi specific word gula k filter kore dekhabo
+
+    displayWord(filterWords)
+})
+
+
+
+})
